@@ -1,4 +1,4 @@
-#!/bin/env/python
+#!/usr/bin/python
 # -*- coding: utf8 -*-
 # Combine iCalendar files
 # $Id$
@@ -18,9 +18,9 @@ from optparse import OptionParser, Option, OptionGroup
 # 3rd party libs
 import vobject
 
-__AUTHOR__ = u"Pekka Järvinen // Modded by Pedro Lopes"
-__YEAR__ = "2010 (original) // 2014 (Mod)"
-__VERSION__ = "0.0.2 (advanced one version from original)"
+__AUTHOR__ = u"Pekka Järvinen // Modded by Pedro Lopes and Patrick Nicholls"
+__YEAR__ = "2010 (original) // 2014 (Mod), 2017 (Mod)"
+__VERSION__ = "0.0.3"
 
 
 DEBUG = False
@@ -55,33 +55,33 @@ if __name__ == "__main__":
 
         for i in files:
             if ( DEBUG):
-	       print ("Opening '%s'.." % i)
+                print ("Opening '%s'.." % i)
             f = open(i, 'rb')
             if ( DEBUG):
-              print ("Reading '%s'.." % i)
+                print ("Reading '%s'.." % i)
             contents = f.read()
             out = open('%s_modded.ics' % i,'w')
             s = []
             for sentence in contents:
                 s.append(sentence)
-		if (sentence == "\n"):
-		  check_property = (''.join([str(x) for x in s]))
-                  check_property = check_property.replace("X-RICAL-TZSOURCE=", "");
-		  if (check_property.find('CALSCALE') != -1): #CALSCALE
-                    counterCALSCALE+=1 #increment that we have seen a CALSCALE
-		    if (counterCALSCALE <= 1):
-	              out.write(check_property) #first one we encounter, safe to print
-                    elif (DEBUG): 
-                      print("Avoiding further CALSCALE")
-	          else: #another property, totally safe to write
-		    if (DEBUG):
-		      print("WRITE:"+check_property)
-                    out.write(check_property)
-                  s = []
+                if (sentence == "\n"):
+                    check_property = (''.join([str(x) for x in s]))
+                    check_property = check_property.replace("X-RICAL-TZSOURCE=", "");
+                    if (check_property.find('CALSCALE') != -1): #CALSCALE
+                        counterCALSCALE+=1 #increment that we have seen a CALSCALE
+                        if (counterCALSCALE <= 1):
+                            out.write(check_property) #first one we encounter, safe to print
+                        elif (DEBUG):
+                            print("Avoiding further CALSCALE")
+                    else: #another property, totally safe to write
+                        if (DEBUG):
+                            print("WRITE:"+check_property)
+                        out.write(check_property)
+                    s = []
             out.close()
             out = open('%s_modded.ics' % i,'r')
             contents = out.read()
-	    contents = contents.decode('utf-8')
+            contents = contents.decode('utf-8')
             f.close()
 
             components = vobject.readComponents(contents, validate=True)
@@ -99,12 +99,12 @@ if __name__ == "__main__":
 
                     if add_entry:
                         combinedCalendar.add(child)
-            
-                
+
+
 
         # Write iCal file
-        if (DEBUG): 
-	  print ("Writing iCalendar file '%s'.." % options.icalfile)
+        if (DEBUG):
+            print ("Writing iCalendar file '%s'.." % options.icalfile)
         f = open(options.icalfile, 'wb')
         print(combinedCalendar)
         f.write(combinedCalendar.serialize())
